@@ -1,0 +1,64 @@
+{
+	"name": "Process_F1_Data",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute Ingestion Pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Ingestion_Pipeline",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"FileDate": {
+							"value": "@pipeline().parameters.FileDate",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			{
+				"name": "Execute transfromation Pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "Execute Ingestion Pipeline",
+						"dependencyConditions": [
+							"Completed"
+						]
+					}
+				],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "Transformations_Pipelines",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"FileDate": {
+							"value": "@pipeline().parameters.FileDate",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"parameters": {
+			"FileDate": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
